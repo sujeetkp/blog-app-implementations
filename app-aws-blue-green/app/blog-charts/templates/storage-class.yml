@@ -1,0 +1,6 @@
+apiVersion: storage.k8s.io/v1
+kind: StorageClass
+metadata:
+  name: {{ .Values.inputs.storageClass.name }}
+provisioner: {{ .Values.inputs.storageClass.provisioner }}
+volumeBindingMode: {{ .Values.inputs.storageClass.volumeBindingMode }}

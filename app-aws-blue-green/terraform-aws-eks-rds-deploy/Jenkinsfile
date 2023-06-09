@@ -1,0 +1,74 @@
+pipeline{
+    agent{
+        label 'linux'
+    }
+    environment{
+        ACTION="destroy"
+        TERRAFORM_VERSION="1.2.2"
+        CHDIR="terraform-aws-eks-rds-deploy/manifests"
+        SCRIPT_PATH="terraform-aws-eks-rds-deploy/scripts"
+        AWS_ACCESS_KEY_ID=credentials('aws_access_key_id')
+        AWS_SECRET_ACCESS_KEY=credentials('aws_secret_access_key')
+    }
+    options {
+        ansiColor('xterm')
+    }
+    stages{
+        stage('install'){
+            when { 
+                environment name: 'ACTION', value: 'deploy' 
+            }
+            steps{
+                 sh '''
+                    chmod 700 ${SCRIPT_PATH}/install.sh
+                    ${SCRIPT_PATH}/install.sh
+                '''
+            }         
+        }
+        stage('test'){
+            when { 
+                environment name: 'ACTION', value: 'deploy' 
+            }
+            steps{
+                sh '''
+                    chmod 700 ${SCRIPT_PATH}/test.sh
+                    ${SCRIPT_PATH}/test.sh
+                '''
+            }          
+        }
+        stage('deploy'){
+            when { 
+                environment name: 'ACTION', value: 'deploy' 
+            }
+            steps{
+                sh '''
+                    chmod 700 ${SCRIPT_PATH}/deploy.sh
+                    ${SCRIPT_PATH}/deploy.sh
+                '''
+            }       
+        }
+        stage('postDeploy'){
+            when { 
+                environment name: 'ACTION', value: 'deploy' 
+            }
+            steps{
+                 sh '''
+                    chmod 700 ${SCRIPT_PATH}/postDeploy.sh
+                    ${SCRIPT_PATH}/postDeploy.sh
+                '''
+            }         
+        }
+        stage('destroy'){
+            when { 
+                environment name: 'ACTION', value: 'destroy' 
+            }
+            steps{
+                 sh '''
+                    chmod 700 ${SCRIPT_PATH}/destroy.sh
+                    ${SCRIPT_PATH}/destroy.sh
+                '''
+            }           
+        }
+    }
+}
+
